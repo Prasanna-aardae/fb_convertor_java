@@ -6,15 +6,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import com.itextpdf.awt.geom.Rectangle;
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -28,25 +28,58 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class FbDataConverter {
-	public static void main(String[] args) throws IOException, ParseException {
+	public static void main(String[] args) throws IOException, ParseException, DocumentException {
 		String file = "//Users//prasanna//Downloads//facebook-chitrabala39.zip";
 		File folder = fileToFolder(file);
 		File jsonFile = getJsonFile(folder);
 		FileSeparator pdfFilePath = new FileSeparator(file, '/', '.');
 		CreateNewTxtFile(pdfFilePath.path()+"/"+pdfFilePath.filename()+".pdf");
-		jsonReader(jsonFile);
+		@SuppressWarnings({ "rawtypes" })
+		List<HashMap> jsonReaderData = jsonReader(jsonFile);
+		
+		jsonToPdf(file, jsonReaderData);
 	}
 
-	  public static void jsonToPdf(File jsonObject) throws DocumentException{
-		  System.out.println(jsonObject);
+	  public static void jsonToPdf(String path,@SuppressWarnings("rawtypes") List<HashMap> jsonReaderData) throws DocumentException{
 	         
 		  try {
-			  Document document = new Document();
-		        PdfWriter.getInstance(document, new FileOutputStream("//Users//prasanna//Downloads//facebook-chitrabala39.pdf"));
+				FileSeparator pdfFilePath = new FileSeparator(path, '/', '.');
+				Document document = new Document();
+				PdfWriter.getInstance(document, new FileOutputStream(pdfFilePath.path()+"/"+pdfFilePath.filename()+".pdf"));
 		        document.open();
-		        Image img = Image.getInstance("arvind-rai.png");
-		        document.add(new Paragraph("Sample 1: This is simple image demo."));
-		        document.add(img);
+				jsonReaderData.forEach(jsonValues ->{
+					System.out.println(jsonValues.get("uri"));
+
+			        Image img;
+					try {
+						img = Image.getInstance(pdfFilePath.path()+"/"+pdfFilePath.filename()+"/"+jsonValues.get("uri"));
+
+						float scaler = ((document.getPageSize().getWidth() - document.leftMargin()
+					               - document.rightMargin() - 2) / img.getWidth()) * 50;
+					
+						img.scalePercent(scaler);
+						document.add(new Paragraph("description: "+ jsonValues.get("description")));
+						document.add(new Paragraph("description: "+ jsonValues.get("title")));
+						document.add(img);
+					} catch (DocumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				});
+				
+//			    Document document = new Document();
+//		        PdfWriter.getInstance(document, new FileOutputStream(pdfFilePath.path()+"/"+pdfFilePath.filename()+".pdf"));
+//		        document.open();
+//		        Image img = Image.getInstance(pdfFilePath.path()+"/"+pdfFilePath.filename()+"/posts//media//Timelinephotos_JD__NEHqUQ/294108693_10162643194643868_2964822127813367567_n_10162643194668868.jpg");
+//		        document.add(new Paragraph("Sample 1: This is simple image demo."));
+//		        document.add(img);
 		        document.close();
 		        System.out.println("Done");
 		    } catch (IOException e) {
@@ -56,14 +89,19 @@ public class FbDataConverter {
 		  }
 	 
 
-	@SuppressWarnings("unchecked")
-	public static void jsonReader(File jsonFile) throws IOException, ParseException {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static List<HashMap> jsonReader(File jsonFile) throws IOException, ParseException {
 		JSONParser jsonParser = new JSONParser();
+		List<HashMap> mediaObjects = new ArrayList<HashMap>();
 
 		try (FileReader reader = new FileReader(jsonFile)) {
 			Object jsonToObj = jsonParser.parse(reader);
 			JSONArray jsonobjToArray = (JSONArray) jsonToObj;
-			jsonobjToArray.forEach(jsonValues -> ParsePostObject((JSONObject) jsonValues));
+			jsonobjToArray.forEach(jsonValues ->{
+				ParsePostObject((JSONObject) jsonValues).forEach(ds -> 
+				mediaObjects.add(ds));
+			});
+			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -71,13 +109,18 @@ public class FbDataConverter {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+		return mediaObjects;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static void ParsePostObject(JSONObject posts) {
+	private static List<HashMap> ParsePostObject(JSONObject posts) {
+		List<HashMap> mediaObjects = new ArrayList<HashMap>();
 		if (posts.get("attachments") != null) {
-	        ((ArrayList) posts.get("attachments")).forEach(emp -> PostsData((JSONObject) emp));
+	        ((ArrayList) posts.get("attachments")).forEach(emp ->{
+	        	PostsData((JSONObject) emp).forEach(ep-> mediaObjects.add((HashMap) ep));
+	        });
 		}
+        return mediaObjects;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -93,8 +136,6 @@ public class FbDataConverter {
 			}
 
 		});
-		
-		mediaObjects.forEach(dd -> System.out.println(dd));
 		return mediaObjects;
 	}
 
