@@ -56,10 +56,10 @@ public class FbDataConverter {
 
 						float scaler = ((document.getPageSize().getWidth() - document.leftMargin()
 					               - document.rightMargin() - 2) / img.getWidth()) * 50;
-					
+				
 						img.scalePercent(scaler);
-						document.add(new Paragraph("description: "+ jsonValues.get("description")));
-						document.add(new Paragraph("description: "+ jsonValues.get("title")));
+						document.add(new Paragraph("Description : "+ jsonValues.get("description")));
+						document.add(new Paragraph("Title : "+ jsonValues.get("title")));
 						document.add(img);
 					} catch (DocumentException e) {
 						// TODO Auto-generated catch block
@@ -73,13 +73,6 @@ public class FbDataConverter {
 					}
 
 				});
-				
-//			    Document document = new Document();
-//		        PdfWriter.getInstance(document, new FileOutputStream(pdfFilePath.path()+"/"+pdfFilePath.filename()+".pdf"));
-//		        document.open();
-//		        Image img = Image.getInstance(pdfFilePath.path()+"/"+pdfFilePath.filename()+"/posts//media//Timelinephotos_JD__NEHqUQ/294108693_10162643194643868_2964822127813367567_n_10162643194668868.jpg");
-//		        document.add(new Paragraph("Sample 1: This is simple image demo."));
-//		        document.add(img);
 		        document.close();
 		        System.out.println("Done");
 		    } catch (IOException e) {
@@ -165,6 +158,7 @@ public class FbDataConverter {
 			System.out.println("An error occurred.");
 			e.printStackTrace();
 		}
+		
 	}
 
 	public static File getJsonFile(File folder) throws IOException {
