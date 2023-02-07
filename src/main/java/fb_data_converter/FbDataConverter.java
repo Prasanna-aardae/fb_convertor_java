@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import com.itextpdf.awt.geom.Rectangle;
-import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
@@ -48,8 +46,6 @@ public class FbDataConverter {
 				PdfWriter.getInstance(document, new FileOutputStream(pdfFilePath.path()+"/"+pdfFilePath.filename()+".pdf"));
 		        document.open();
 				jsonReaderData.forEach(jsonValues ->{
-					System.out.println(jsonValues.get("uri"));
-
 			        Image img;
 					try {
 						img = Image.getInstance(pdfFilePath.path()+"/"+pdfFilePath.filename()+"/"+jsonValues.get("uri"));
@@ -132,6 +128,7 @@ public class FbDataConverter {
 		return mediaObjects;
 	}
 
+	@SuppressWarnings("rawtypes")
 	private static HashMap DataMedia(JSONObject media) throws IOException {
 		JSONObject mediaObj = (JSONObject) media.get("media");
 		HashMap<String, String> mainValues = new HashMap<String, String>();
