@@ -1,7 +1,6 @@
 package fb_data_converter;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.FileOutputStream;
@@ -10,8 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -28,8 +25,9 @@ import com.itextpdf.text.pdf.PdfPTable;
 public class FbDataConverter {
 	public static void main(String[] args) throws IOException, ParseException, DocumentException {
 		String file = "/Users/prasanna/Downloads/facebook-100090052664579.zip";
-		File folder = fileToFolder(file);
-		File jsonFile = getJsonFile(folder);
+		UnZip unZip = new UnZip(file);
+		File data_folder = unZip.fileToFolder();
+		File jsonFile = getJsonFile(data_folder);
 		FileSeparator pdfFilePath = new FileSeparator(file, '/', '.');
 		CreateNewPdfFile(pdfFilePath.path() + "/" + pdfFilePath.filename() + ".pdf");
 		@SuppressWarnings({ "rawtypes" })
@@ -39,9 +37,9 @@ public class FbDataConverter {
 
 	public static void jsonToPdf(String path, @SuppressWarnings("rawtypes") List<HashMap> jsonReaderData) {
 
-		String[] headers = new String[] { "Id", "Description", "post" };
+		String[] headers = new String[] { "Id", "post" };
 
-		Document document = new Document(PageSize.LETTER.rotate());
+		Document document = new Document();
 		FileSeparator pdfFilePath = new FileSeparator(path, '/', '.');
 		try {
 			PdfWriter.getInstance(document,
@@ -59,20 +57,18 @@ public class FbDataConverter {
 			}
 			table.completeRow();
 
+			int id = 0;
+
+			System.out.println(jsonReaderData);
 			jsonReaderData.forEach(jsonValues -> {
-				if(jsonValues.get("post") != null) {
+				if (jsonValues.get("post") != null) {
 					Phrase phrase = new Phrase(String.valueOf(jsonReaderData.indexOf(jsonValues) + 1), fontRow);
 					table.addCell(new PdfPCell(phrase));
-					Phrase phrase1 = new Phrase(
-							jsonValues.get("description") == null ? "" : jsonValues.get("description").toString(), fontRow);
+					Phrase phrase1 = new Phrase(jsonValues.get("post").toString(), fontRow);
 					table.addCell(new PdfPCell(phrase1));
-					Phrase phrase2 = new Phrase(jsonValues.get("post").toString(),
-							fontRow);
-					table.addCell(new PdfPCell(phrase2));
 				}
 			});
 			table.completeRow();
-			document.addTitle("PDF Table Demo");
 			document.add(table);
 		} catch (DocumentException | FileNotFoundException e) {
 			e.printStackTrace();
@@ -86,7 +82,7 @@ public class FbDataConverter {
 	public static List<HashMap> jsonReader(File jsonFile) throws IOException, ParseException {
 		JSONParser jsonParser = new JSONParser();
 		List<HashMap> mediaObjects = new ArrayList<HashMap>();
-		
+
 		try (FileReader reader = new FileReader(jsonFile)) {
 			Object jsonToObj = jsonParser.parse(reader);
 			JSONArray jsonobjToArray = (JSONArray) jsonToObj;
@@ -109,7 +105,7 @@ public class FbDataConverter {
 		List<HashMap> mediaObjects = new ArrayList<HashMap>();
 		if (posts.get("data") != null) {
 			((ArrayList) posts.get("data")).forEach(emp -> {
-			mediaObjects.add((HashMap) emp);
+				mediaObjects.add((HashMap) emp);
 			});
 		}
 		return mediaObjects;
@@ -142,41 +138,6 @@ public class FbDataConverter {
 						return fi;
 					}
 				}
-			}
-		}
-		return folder;
-	}
-
-	public static File fileToFolder(String fileName) throws IOException {
-		FileInputStream file = new FileInputStream(fileName);
-		@SuppressWarnings("resource")
-		ZipInputStream zipFile = new ZipInputStream(file);
-		ZipEntry openZip;
-		FileSeparator myFile = new FileSeparator(fileName, '/', '.');
-		File folder = null;
-		folder = new File(myFile.path().toString() + "/" + myFile.filename().toString());
-
-		boolean bool = folder.mkdir();
-		byte[] buffer = new byte[1024];
-		if (bool) {
-			System.out.println("Folder is created successfully");
-		} else {
-			System.out.println("Error Found!");
-		}
-
-		while ((openZip = zipFile.getNextEntry()) != null) {
-			String name = openZip.getName();
-			File files = new File(
-					myFile.path() + File.separator + myFile.filename().toString() + File.separator + name);
-			if (new File(files.getParent()).mkdirs()) {
-				FileOutputStream FoS = new FileOutputStream(files);
-				int len;
-				while ((len = zipFile.read(buffer)) > 0) {
-					FoS.write(buffer, 0, len);
-				}
-				FoS.close();
-				zipFile.closeEntry();
-				openZip = zipFile.getNextEntry();
 			}
 		}
 		return folder;
