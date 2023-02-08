@@ -23,7 +23,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 
 public class FbDataConverter {
-	public static void main(String[] args) throws IOException, ParseException, DocumentException {
+	public static void main(String[] args) throws IOException, ParseException{
 		String file = "/Users/prasanna/Downloads/facebook-100090052664579.zip";
 		UnZip unZip = new UnZip(file);
 		File dataFolder = unZip.fileToFolder();
@@ -43,7 +43,7 @@ public class FbDataConverter {
 		FileSeparator pdfFilePath = new FileSeparator(path, '/', '.');
 		try {
 			PdfWriter.getInstance(document,
-					new FileOutputStream(pdfFilePath.path() + "/" + pdfFilePath.filename() + ".pdf"));
+					new FileOutputStream(pdfFilePath.path() + File.separator + pdfFilePath.filename() + ".pdf"));
 			document.open();
 			Font fontHeader = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD);
 			Font fontRow = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.NORMAL);

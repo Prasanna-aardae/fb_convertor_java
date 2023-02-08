@@ -20,7 +20,7 @@ public class UnZip {
 		ZipInputStream zipData = new ZipInputStream(file);
 		ZipEntry openZip;
 		FileSeparator myFile = new FileSeparator(fileName, '/', '.');
-		File dataFolder = new File(myFile.path()+ "/" + myFile.filename());
+		File dataFolder = new File(myFile.path()+ File.separator + myFile.filename());
 
 		boolean bool = dataFolder.mkdir();
 		byte[] buffer = new byte[1024];
@@ -35,12 +35,12 @@ public class UnZip {
 			File files = new File(
 					myFile.path() + File.separator + myFile.filename() + File.separator + name);
 			if (new File(files.getParent()).mkdirs()) {
-				FileOutputStream FoS = new FileOutputStream(files);
+				FileOutputStream unzipFile = new FileOutputStream(files);
 				int len;
 				while ((len = zipData.read(buffer)) > 0) {
-					FoS.write(buffer, 0, len);
+					unzipFile.write(buffer, 0, len);
 				}
-				FoS.close();
+				unzipFile.close();
 				zipData.closeEntry();
 				openZip = zipData.getNextEntry();
 			}
