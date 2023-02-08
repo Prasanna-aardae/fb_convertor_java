@@ -56,10 +56,7 @@ public class FbDataConverter {
 				table.addCell(cell);
 			}
 			table.completeRow();
-
-			int id = 0;
-
-			System.out.println(jsonReaderData);
+			
 			jsonReaderData.forEach(jsonValues -> {
 				if (jsonValues.get("post") != null) {
 					Phrase phrase = new Phrase(String.valueOf(jsonReaderData.indexOf(jsonValues) + 1), fontRow);
@@ -74,7 +71,6 @@ public class FbDataConverter {
 			e.printStackTrace();
 		} finally {
 			document.close();
-			System.out.println("Done");
 		}
 	}
 
@@ -117,10 +113,10 @@ public class FbDataConverter {
 			if (myObj.createNewFile()) {
 				System.out.println("File created: " + myObj.getName());
 			} else {
-				System.out.println("File already exists.");
+				System.err.println("File already exists.");
 			}
 		} catch (IOException e) {
-			System.out.println("An error occurred.");
+			System.err.println("An error occurred.");
 			e.printStackTrace();
 		}
 
