@@ -26,10 +26,10 @@ public class FbDataConverter {
 	public static void main(String[] args) throws IOException, ParseException, DocumentException {
 		String file = "/Users/prasanna/Downloads/facebook-100090052664579.zip";
 		UnZip unZip = new UnZip(file);
-		File data_folder = unZip.fileToFolder();
-		File jsonFile = getJsonFile(data_folder);
+		File dataFolder = unZip.fileToFolder();
+		File jsonFile = getJsonFile(dataFolder);
 		FileSeparator pdfFilePath = new FileSeparator(file, '/', '.');
-		CreateNewPdfFile(pdfFilePath.path() + "/" + pdfFilePath.filename() + ".pdf");
+		createNewPdfFile(pdfFilePath.path() + "/" + pdfFilePath.filename() + ".pdf");
 		@SuppressWarnings({ "rawtypes" })
 		List<HashMap> jsonReaderData = jsonReader(jsonFile);
 		jsonToPdf(file, jsonReaderData);
@@ -75,7 +75,7 @@ public class FbDataConverter {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static List<HashMap> jsonReader(File jsonFile) throws IOException, ParseException {
+	public static List<HashMap> jsonReader(File jsonFile) {
 		JSONParser jsonParser = new JSONParser();
 		List<HashMap> mediaObjects = new ArrayList<HashMap>();
 
@@ -83,7 +83,7 @@ public class FbDataConverter {
 			Object jsonToObj = jsonParser.parse(reader);
 			JSONArray jsonobjToArray = (JSONArray) jsonToObj;
 			jsonobjToArray.forEach(jsonValues -> {
-				ParsePostObject((JSONObject) jsonValues).forEach(ds -> mediaObjects.add(ds));
+				parsePostObject((JSONObject) jsonValues).forEach(ds -> mediaObjects.add(ds));
 			});
 
 		} catch (FileNotFoundException e) {
@@ -97,7 +97,7 @@ public class FbDataConverter {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static List<HashMap> ParsePostObject(JSONObject posts) {
+	private static List<HashMap> parsePostObject(JSONObject posts) {
 		List<HashMap> mediaObjects = new ArrayList<HashMap>();
 		if (posts.get("data") != null) {
 			((ArrayList) posts.get("data")).forEach(emp -> {
@@ -107,7 +107,7 @@ public class FbDataConverter {
 		return mediaObjects;
 	}
 
-	public static void CreateNewPdfFile(String pdfPathName) throws IOException {
+	public static void createNewPdfFile(String pdfPathName){
 		try {
 			File myObj = new File(pdfPathName);
 			if (myObj.createNewFile()) {
@@ -122,11 +122,11 @@ public class FbDataConverter {
 
 	}
 
-	public static File getJsonFile(File folder) throws IOException {
+	public static File getJsonFile(File folder) {
 		File[] listOfFiles = folder.listFiles();
 		for (File files : listOfFiles) {
 			FileSeparator jsonFile = new FileSeparator(files.getName(), '/', '.');
-			if (jsonFile.extension().toString().compareTo("posts") == 0) {
+			if (jsonFile.extension().compareTo("posts") == 0) {
 				for (File fi : files.listFiles()) {
 					FileSeparator jsonFileName = new FileSeparator(fi.getName(), '/', '.');
 					String[] tokens = jsonFileName.filename().split("_");

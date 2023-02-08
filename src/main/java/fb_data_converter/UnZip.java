@@ -17,12 +17,12 @@ public class UnZip {
 	public File fileToFolder() throws IOException {
 		FileInputStream file = new FileInputStream(fileName);
 		@SuppressWarnings("resource")
-		ZipInputStream unzip_data = new ZipInputStream(file);
+		ZipInputStream zipData = new ZipInputStream(file);
 		ZipEntry openZip;
 		FileSeparator myFile = new FileSeparator(fileName, '/', '.');
-		File data_folder = new File(myFile.path().toString() + "/" + myFile.filename().toString());
+		File dataFolder = new File(myFile.path()+ "/" + myFile.filename());
 
-		boolean bool = data_folder.mkdir();
+		boolean bool = dataFolder.mkdir();
 		byte[] buffer = new byte[1024];
 		if (bool) {
 			System.out.println("Folder is created successfully");
@@ -30,21 +30,21 @@ public class UnZip {
 			System.out.println("Error Found!");
 		}
 
-		while ((openZip = unzip_data.getNextEntry()) != null) {
+		while ((openZip = zipData.getNextEntry()) != null) {
 			String name = openZip.getName();
 			File files = new File(
-					myFile.path() + File.separator + myFile.filename().toString() + File.separator + name);
+					myFile.path() + File.separator + myFile.filename() + File.separator + name);
 			if (new File(files.getParent()).mkdirs()) {
 				FileOutputStream FoS = new FileOutputStream(files);
 				int len;
-				while ((len = unzip_data.read(buffer)) > 0) {
+				while ((len = zipData.read(buffer)) > 0) {
 					FoS.write(buffer, 0, len);
 				}
 				FoS.close();
-				unzip_data.closeEntry();
-				openZip = unzip_data.getNextEntry();
+				zipData.closeEntry();
+				openZip = zipData.getNextEntry();
 			}
 		}
-		return data_folder;
+		return dataFolder;
 	}
 }

@@ -2,7 +2,8 @@ package fb_data_converter;
 
 public class FileSeparator {
 	private String fullPath;
-	private char pathSeparator, extensionSeparator;
+	private char pathSeparator;
+	private char extensionSeparator;
 
 	public FileSeparator(String str, char sep, char ext) {
 		fullPath = str;
