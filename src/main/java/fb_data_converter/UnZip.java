@@ -15,44 +15,44 @@ public class UnZip {
 	public UnZip(String name) {
 		fileName = name;
 	}
-	
+
 	public String fileToFolder() throws IOException {
-		String extractFolder =null;
+		String extractFolder = null;
 		try {
-            int BUFFER = 4096;
+			int buffer = 4096;
 			File file = new File(fileName);
-    		FileSeparator FilePath = new FileSeparator(fileName, '/', '.');
-            extractFolder = FilePath.path() + "/" + FilePath.filename();
-            try (ZipFile zip = new ZipFile(file)) {
+			FileSeparator filePath = new FileSeparator(fileName, '/', '.');
+			extractFolder = filePath.path() + "/" + filePath.filename();
+			try (ZipFile zip = new ZipFile(file)) {
 				String newPath = extractFolder;
 				new File(newPath).mkdir();
 				@SuppressWarnings("rawtypes")
 				Enumeration zipFileEntries = zip.entries();
 				while (zipFileEntries.hasMoreElements()) {
-				    ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
-				    String currentEntry = entry.getName();
-				    currentEntry = currentEntry.replace('\\', '/');
-				    File destFile = new File(newPath, currentEntry);
-				    File destinationParent = destFile.getParentFile();
-				    destinationParent.mkdirs();
-				    if (!entry.isDirectory()) {
-				        BufferedInputStream is = new BufferedInputStream(zip.getInputStream(entry));
-				        int currentByte;
-				        byte data[] = new byte[BUFFER];
-				        FileOutputStream fos = new FileOutputStream(destFile);
-				        BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER);
-				        while ((currentByte = is.read(data, 0, BUFFER)) != -1) {
-				            dest.write(data, 0, currentByte);
-				        }
-				        dest.flush();
-				        dest.close();
-				        is.close();
-				    }
+					ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
+					String currentEntry = entry.getName();
+					currentEntry = currentEntry.replace('\\', '/');
+					File destFile = new File(newPath, currentEntry);
+					File destinationParent = destFile.getParentFile();
+					destinationParent.mkdirs();
+					if (!entry.isDirectory()) {
+						BufferedInputStream is = new BufferedInputStream(zip.getInputStream(entry));
+						int currentByte;
+						byte[] data = new byte[buffer];
+						FileOutputStream fos = new FileOutputStream(destFile);
+						BufferedOutputStream dest = new BufferedOutputStream(fos, buffer);
+						while ((currentByte = is.read(data, 0, buffer)) != -1) {
+							dest.write(data, 0, currentByte);
+						}
+						dest.flush();
+						dest.close();
+						is.close();
+					}
 				}
 			}
-        } catch (Exception e) {
-        	e.printStackTrace();
-        }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return extractFolder;
 	}
 }

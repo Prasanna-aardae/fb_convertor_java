@@ -37,7 +37,6 @@ public class FbDataConverter {
 	}
 
 	public static void jsonToPdf(String path, @SuppressWarnings("rawtypes") List<HashMap> jsonReaderData) {
-
 		Document document = new Document(PageSize.A4);
 		try {
 			FileSeparator pdfFilePath = new FileSeparator(path, '/', '.');
@@ -45,14 +44,12 @@ public class FbDataConverter {
 					new FileOutputStream(pdfFilePath.path() + "/" + pdfFilePath.filename() + ".pdf"));
 			document.open();
 			jsonReaderData.forEach(jsonValues -> {
-				System.out.println(jsonReaderData.indexOf(jsonValues) + 1);
-				Image img;
 				try {
 					document.add(new Paragraph("Post No: " + (jsonReaderData.indexOf(jsonValues) + 1)));
 					document.add(new Paragraph("Post: " + jsonValues.get("post")));
 					document.add(new Paragraph("Date & time: " + jsonValues.get("day") +" "+ jsonValues.get("date")+" "+jsonValues.get("time")));
 					if (jsonValues.get("uri") != "") {
-						img = Image.getInstance(
+						Image img = Image.getInstance(
 								pdfFilePath.path() + "/" + pdfFilePath.filename() + "/" + jsonValues.get("uri"));
 
 						float scaler = ((document.getPageSize().getWidth() - document.leftMargin()
@@ -161,9 +158,10 @@ public class FbDataConverter {
 		});
 
 		medisPostObjects.forEach(post -> {
-			if (post != null && post.get("description") != null) {
-				mainValues.put("description", post.get("description").toString());
-				mainValues.put("uri", post.get("uri").toString());
+			String desc = "description";
+			if (post != null && post.get(desc) != null) {
+				mainValues.put(desc, post.get(desc).toString());
+				mainValues.put("uri", (String) post.get("uri"));
 			}
 		});
 
