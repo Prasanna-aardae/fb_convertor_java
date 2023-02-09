@@ -25,7 +25,7 @@ import com.itextpdf.text.*;
 
 public class FbDataConverter {
 	public static void main(String[] args) throws IOException, ParseException {
-		String file = "/Users/prasanna/Downloads/facebook-100090052664579 (3).zip";
+		String file = "/Users/prasanna/Downloads/facebook-100090052664579 (5).zip";
 		UnZip unZip = new UnZip(file);
 		String dataFolder = unZip.fileToFolder();
 		File jsonFile = getJsonFile(dataFolder);
@@ -164,7 +164,7 @@ public class FbDataConverter {
 		});
 
 		medisPostObjects.forEach(post -> {
-			if (post != null) {
+			if (post != null && post.get("description") != null) {
 				mainValues.put("description", (String) post.get("description").toString());
 				mainValues.put("uri", (String) post.get("uri").toString());
 			}
