@@ -3,6 +3,11 @@ package fb_data_converter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -15,18 +20,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.itextpdf.text.Document;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
 
 public class FbDataConverter {
-	public static void main(String[] args) throws IOException, ParseException{
-		String file = "/Users/prasanna/Downloads/facebook-100090052664579.zip";
+	public static void main(String[] args) throws IOException, ParseException {
+		String file = "/Users/prasanna/Downloads/facebook-100090052664579 (3).zip";
 		UnZip unZip = new UnZip(file);
-		File dataFolder = unZip.fileToFolder();
+		String dataFolder = unZip.fileToFolder();
 		File jsonFile = getJsonFile(dataFolder);
 		FileSeparator pdfFilePath = new FileSeparator(file, '/', '.');
 		createNewPdfFile(pdfFilePath.path() + "/" + pdfFilePath.filename() + ".pdf");
@@ -37,36 +38,42 @@ public class FbDataConverter {
 
 	public static void jsonToPdf(String path, @SuppressWarnings("rawtypes") List<HashMap> jsonReaderData) {
 
-		String[] headers = new String[] { "Id", "post" };
-
-		Document document = new Document();
-		FileSeparator pdfFilePath = new FileSeparator(path, '/', '.');
+		Document document = new Document(PageSize.A4);
 		try {
+			FileSeparator pdfFilePath = new FileSeparator(path, '/', '.');
 			PdfWriter.getInstance(document,
-					new FileOutputStream(pdfFilePath.path() + File.separator + pdfFilePath.filename() + ".pdf"));
+					new FileOutputStream(pdfFilePath.path() + "/" + pdfFilePath.filename() + ".pdf"));
 			document.open();
-			Font fontHeader = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD);
-			Font fontRow = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.NORMAL);
-
-			PdfPTable table = new PdfPTable(headers.length);
-			for (String header : headers) {
-				PdfPCell cell = new PdfPCell();
-				cell.setGrayFill(0.9f);
-				cell.setPhrase(new Phrase(header.toUpperCase(), fontHeader));
-				table.addCell(cell);
-			}
-			table.completeRow();
-			
 			jsonReaderData.forEach(jsonValues -> {
-				if (jsonValues.get("post") != null) {
-					Phrase phrase = new Phrase(String.valueOf(jsonReaderData.indexOf(jsonValues) + 1), fontRow);
-					table.addCell(new PdfPCell(phrase));
-					Phrase phrase1 = new Phrase(jsonValues.get("post").toString(), fontRow);
-					table.addCell(new PdfPCell(phrase1));
+				System.out.println(jsonReaderData.indexOf(jsonValues) + 1);
+				Image img;
+				try {
+					document.add(new Paragraph("Post No: " + (jsonReaderData.indexOf(jsonValues) + 1)));
+					document.add(new Paragraph("Post: " + jsonValues.get("post")));
+					document.add(new Paragraph("Date & time: " + jsonValues.get("day") +" "+ jsonValues.get("date")+" "+jsonValues.get("time")));
+					if (jsonValues.get("uri") != "") {
+						img = Image.getInstance(
+								pdfFilePath.path() + "/" + pdfFilePath.filename() + "/" + jsonValues.get("uri"));
+
+						float scaler = ((document.getPageSize().getWidth() - document.leftMargin()
+								- document.rightMargin() - 2) / img.getWidth()) * 70;
+
+						img.scalePercent(scaler);
+						document.add(img);
+					}
+					document.newPage();
+				} catch (DocumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
+
 			});
-			table.completeRow();
-			document.add(table);
 		} catch (DocumentException | FileNotFoundException e) {
 			e.printStackTrace();
 		} finally {
@@ -83,7 +90,7 @@ public class FbDataConverter {
 			Object jsonToObj = jsonParser.parse(reader);
 			JSONArray jsonobjToArray = (JSONArray) jsonToObj;
 			jsonobjToArray.forEach(jsonValues -> {
-				parsePostObject((JSONObject) jsonValues).forEach(ds -> mediaObjects.add(ds));
+				mediaObjects.add(parsePostObject((JSONObject) jsonValues));
 			});
 
 		} catch (FileNotFoundException e) {
@@ -97,17 +104,76 @@ public class FbDataConverter {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static List<HashMap> parsePostObject(JSONObject posts) {
+	private static HashMap<String, String> parsePostObject(JSONObject posts) {
+		HashMap<String, String> mainValues = new HashMap<String, String>();
 		List<HashMap> mediaObjects = new ArrayList<HashMap>();
+		HashMap<String, String> att;
+
 		if (posts.get("data") != null) {
+			Object timestamp = posts.get("timestamp");
+			long number = Integer.parseInt(timestamp.toString());
+			Instant instant = Instant.ofEpochSecond(number);
+			mainValues.put("date", (String) LocalDate.ofInstant(instant, ZoneId.systemDefault()).toString());
+			mainValues.put("time", (String) LocalTime.ofInstant(instant, ZoneId.systemDefault()).toString());
+			mainValues.put("day",
+					(String) LocalDate.ofInstant(instant, ZoneId.systemDefault()).getDayOfWeek().toString());
 			((ArrayList) posts.get("data")).forEach(emp -> {
 				mediaObjects.add((HashMap) emp);
 			});
+
+			mediaObjects.forEach(post -> {
+				Object po = post.get("post") != null ? post.get("post") : "";
+				mainValues.put("post", (String) po.toString());
+			});
 		}
-		return mediaObjects;
+		if (posts.get("attachments") != null) {
+			att = attachmentsObject(posts.get("attachments"));
+			if (mainValues.get("post") != null && att.get("description") != null) {
+				if (mainValues.get("post").compareTo(att.get("description")) == 0) {
+					mainValues.put("uri", (String) att.get("uri").toString());
+				}
+			} else {
+				mainValues.put("uri", "");
+			}
+		} else {
+			mainValues.put("uri", "");
+		}
+
+		return mainValues;
 	}
 
-	public static void createNewPdfFile(String pdfPathName){
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private static HashMap<String, String> attachmentsObject(Object attachments) {
+		HashMap<String, String> mainValues = new HashMap<String, String>();
+		List<HashMap> attObjects = new ArrayList<HashMap>();
+		List<HashMap> dataObjects = new ArrayList<HashMap>();
+		List<HashMap> medisPostObjects = new ArrayList<HashMap>();
+
+		((ArrayList) attachments).forEach(emp -> {
+			attObjects.add((HashMap) emp);
+		});
+
+		attObjects.forEach(post -> {
+			((ArrayList) post.get("data")).forEach(emp -> {
+				dataObjects.add((HashMap) emp);
+			});
+		});
+
+		dataObjects.forEach(post -> {
+			medisPostObjects.add((HashMap) post.get("media"));
+		});
+
+		medisPostObjects.forEach(post -> {
+			if (post != null) {
+				mainValues.put("description", (String) post.get("description").toString());
+				mainValues.put("uri", (String) post.get("uri").toString());
+			}
+		});
+
+		return mainValues;
+	}
+
+	public static void createNewPdfFile(String pdfPathName) {
 		try {
 			File myObj = new File(pdfPathName);
 			if (myObj.createNewFile()) {
@@ -116,26 +182,26 @@ public class FbDataConverter {
 				System.err.println("File already exists.");
 			}
 		} catch (IOException e) {
-			System.err.println("An error occurred.");
 			e.printStackTrace();
 		}
 
 	}
 
-	public static File getJsonFile(File folder) {
-		File[] listOfFiles = folder.listFiles();
+	public static File getJsonFile(String folder) {
+		File file = new File(folder);
+		File[] listOfFiles = file.listFiles();
 		for (File files : listOfFiles) {
 			FileSeparator jsonFile = new FileSeparator(files.getName(), '/', '.');
 			if (jsonFile.extension().compareTo("posts") == 0) {
 				for (File fi : files.listFiles()) {
-					FileSeparator jsonFileName = new FileSeparator(fi.getName(), '/', '.');
-					String[] tokens = jsonFileName.filename().split("_");
+					System.out.println(fi.getName());
+					String[] tokens = fi.getName().split("_");
 					if (Arrays.asList(tokens).contains("posts")) {
 						return fi;
 					}
 				}
 			}
 		}
-		return folder;
+		return file;
 	}
 }
