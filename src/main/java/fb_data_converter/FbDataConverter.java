@@ -35,7 +35,7 @@ public class FbDataConverter {
 		File jsonFile = getJsonFile(dataFolder);
 		FileSeparator pdfFilePath = new FileSeparator(file, '/', '.');
 		createNewPdfFile(pdfFilePath.path() + "/" + pdfFilePath.filename() + ".pdf");
-		@SuppressWarnings({ "rawtypes" })
+		@SuppressWarnings("rawtypes")
 		List<HashMap> jsonReaderData = jsonReader(jsonFile);
 		jsonToPdf(file, jsonReaderData);
 	}
@@ -87,9 +87,7 @@ public class FbDataConverter {
 		try (FileReader reader = new FileReader(jsonFile)) {
 			Object jsonToObj = jsonParser.parse(reader);
 			JSONArray jsonobjToArray = (JSONArray) jsonToObj;
-			jsonobjToArray.forEach(jsonValues -> {
-				mediaObjects.add(parsePostObject((JSONObject) jsonValues));
-			});
+			jsonobjToArray.forEach(jsonValues -> mediaObjects.add(parsePostObject((JSONObject) jsonValues)));
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -114,9 +112,7 @@ public class FbDataConverter {
 			mainValues.put("date", LocalDate.ofInstant(instant, ZoneId.systemDefault()).toString());
 			mainValues.put("time", LocalTime.ofInstant(instant, ZoneId.systemDefault()).toString());
 			mainValues.put("day", LocalDate.ofInstant(instant, ZoneId.systemDefault()).getDayOfWeek().toString());
-			((ArrayList) posts.get("data")).forEach(emp -> {
-				mediaObjects.add((HashMap) emp);
-			});
+			((ArrayList) posts.get("data")).forEach(data -> mediaObjects.add((HashMap) data));
 
 			mediaObjects.forEach(post -> {
 				Object po = post.get("post") != null ? post.get("post") : "";
@@ -146,21 +142,9 @@ public class FbDataConverter {
 		List<HashMap> attObjects = new ArrayList<HashMap>();
 		List<HashMap> dataObjects = new ArrayList<HashMap>();
 		List<HashMap> medisPostObjects = new ArrayList<HashMap>();
-
-		((ArrayList) attachments).forEach(emp -> {
-			attObjects.add((HashMap) emp);
-		});
-
-		attObjects.forEach(post -> {
-			((ArrayList) post.get("data")).forEach(emp -> {
-				dataObjects.add((HashMap) emp);
-			});
-		});
-
-		dataObjects.forEach(post -> {
-			medisPostObjects.add((HashMap) post.get("media"));
-		});
-
+		((ArrayList) attachments).forEach(att -> attObjects.add((HashMap) att));
+		attObjects.forEach(post -> ((ArrayList) post.get("data")).forEach(data -> dataObjects.add((HashMap) data)));
+		dataObjects.forEach(post -> medisPostObjects.add((HashMap) post.get("media")));
 		medisPostObjects.forEach(post -> {
 			String desc = "description";
 			if (post != null && post.get(desc) != null) {
@@ -168,7 +152,6 @@ public class FbDataConverter {
 				mainValues.put("uri", (String) post.get("uri"));
 			}
 		});
-
 		return mainValues;
 	}
 
@@ -183,7 +166,6 @@ public class FbDataConverter {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public static File getJsonFile(String folder) {
@@ -193,7 +175,6 @@ public class FbDataConverter {
 			FileSeparator jsonFile = new FileSeparator(files.getName(), '/', '.');
 			if (jsonFile.extension().compareTo("posts") == 0) {
 				for (File fi : files.listFiles()) {
-					System.out.println(fi.getName());
 					String[] tokens = fi.getName().split("_");
 					if (Arrays.asList(tokens).contains("posts")) {
 						return fi;
