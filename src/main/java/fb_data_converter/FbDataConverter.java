@@ -1,27 +1,31 @@
 package fb_data_converter;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.FileNotFoundException;
+
 import java.net.MalformedURLException;
+
+import java.time.ZoneId;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
+
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.util.ArrayList;
+
+import java.util.List;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
+import java.util.ArrayList;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfWriter;
 
 public class FbDataConverter {
 	public static void main(String[] args) throws IOException, ParseException {
