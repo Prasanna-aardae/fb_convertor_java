@@ -1,0 +1,23 @@
+{
+  "login_protection_data_v2": [
+    {
+      "name": "Cookie: hTXj********************",
+      "session": {
+        "created_timestamp": 1675835650
+      }
+    },
+    {
+      "name": "IP address: 183.82.28.130",
+      "session": {
+        "created_timestamp": 1675835650,
+        "ip_address": "183.82.28.130"
+      }
+    },
+    {
+      "name": "Estimated location inferred from IP 13.072, 80.288",
+      "session": {
+        "created_timestamp": 1675835650
+      }
+    }
+  ]
+}

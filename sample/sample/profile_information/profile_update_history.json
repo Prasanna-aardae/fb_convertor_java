@@ -1,0 +1,29 @@
+{
+  "profile_updates_v2": [
+    {
+      "timestamp": 1675835650,
+      "attachments": [
+        {
+          "data": [
+            {
+              "life_event": {
+                "title": "Born on 14 March 1989",
+                "start_date": {
+                  "year": 1989,
+                  "month": 3,
+                  "day": 14
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "data": [
+        {
+          "backdated_timestamp": 605865600
+        }
+      ],
+      "title": "Prasanna Venkatesh added a life event from 14 March 1989: Born on 14 March 1989."
+    }
+  ]
+}

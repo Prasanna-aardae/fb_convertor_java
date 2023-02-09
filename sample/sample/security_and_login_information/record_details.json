@@ -1,0 +1,41 @@
+{
+  "admin_records_v2": [
+    {
+      "event": "Checkpoint completed",
+      "session": {
+        "created_timestamp": 1675835680,
+        "ip_address": "183.82.28.130",
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
+        "datr_cookie": "hTXj********************"
+      }
+    },
+    {
+      "event": "Add Phone Number",
+      "session": {
+        "created_timestamp": 1675835680,
+        "ip_address": "183.82.28.130",
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
+        "datr_cookie": "hTXj********************"
+      },
+      "extra_info": {
+        "old_name": "",
+        "new_name": "",
+        "old_number": "",
+        "old_vanity": "",
+        "new_vanity": "",
+        "old_email": "",
+        "new_email": "",
+        "new_number": "+917845274962"
+      }
+    },
+    {
+      "event": "Checkpoint",
+      "session": {
+        "created_timestamp": 1675835657,
+        "ip_address": "183.82.28.130",
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
+        "datr_cookie": "hTXj********************"
+      }
+    }
+  ]
+}

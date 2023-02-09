@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 
 import java.util.List;
+import java.util.Random;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -28,24 +29,26 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
 
 public class FbDataConverter {
-	public static void main(String[] args) throws IOException, ParseException {
+	public static void main(String[] args) throws IOException, ParseException, DocumentException {
 		String file = "./sample/sample.zip";
 		UnZip unZip = new UnZip(file);
 		String dataFolder = unZip.fileToFolder();
 		File jsonFile = getJsonFile(dataFolder);
-		FileSeparator pdfFilePath = new FileSeparator(file, '/', '.');
-		createNewPdfFile(pdfFilePath.path() + "/" + pdfFilePath.filename() + ".pdf");
+//		FileSeparator pdfFilePath = new FileSeparator(file, '/', '.');
+//		createNewPdfFile(pdfFilePath.path() + "/" + pdfFilePath.filename() + ".pdf");
 		@SuppressWarnings("rawtypes")
 		List<HashMap> jsonReaderData = jsonReader(jsonFile);
 		jsonToPdf(file, jsonReaderData);
 	}
 
-	public static void jsonToPdf(String path, @SuppressWarnings("rawtypes") List<HashMap> jsonReaderData) {
+	public static void jsonToPdf(String path, @SuppressWarnings("rawtypes") List<HashMap> jsonReaderData) throws IOException, DocumentException {
 		Document document = new Document(PageSize.A4);
 		try {
 			FileSeparator pdfFilePath = new FileSeparator(path, '/', '.');
-			PdfWriter.getInstance(document,
-					new FileOutputStream(pdfFilePath.path() + "/" + pdfFilePath.filename() + ".pdf"));
+			Random random = new Random();
+			File myObj = new File(pdfFilePath.path() + "/" + pdfFilePath.filename() + "_output_"+random.nextInt(50)+".pdf");
+			myObj.createNewFile();
+			PdfWriter.getInstance(document,new FileOutputStream(pdfFilePath.path() + "/" + myObj.getName()));
 			document.open();
 			jsonReaderData.forEach(jsonValues -> {
 				try {
@@ -72,7 +75,7 @@ public class FbDataConverter {
 				}
 
 			});
-		} catch (DocumentException | FileNotFoundException e) {
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} finally {
 			document.close();

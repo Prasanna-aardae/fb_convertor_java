@@ -1,0 +1,23 @@
+{
+  "participants": [
+    {
+      "name": "Chitra Bala"
+    },
+    {
+      "name": "Prasanna Venkatesh"
+    }
+  ],
+  "messages": [
+    {
+      "sender_name": "Chitra Bala",
+      "timestamp_ms": 1675835947008,
+      "content": "You are now connected on Messenger"
+    }
+  ],
+  "title": "Chitra Bala",
+  "is_still_participant": true,
+  "thread_path": "inbox/chitrabala_10163206984373868",
+  "magic_words": [
+    
+  ]
+}

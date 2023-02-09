@@ -1,0 +1,33 @@
+{
+  "language_and_locale_v2": [
+    {
+      "name": "Language settings",
+      "description": "Your preferred language settings",
+      "children": [
+        {
+          "name": "Selected language",
+          "description": "The language that you've chosen for your Facebook experience",
+          "entries": [
+            {
+              "data": {
+                "value": "en_GB"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Locale changes",
+          "description": "The history of changes to your locale setting",
+          "entries": [
+            {
+              "timestamp": 1675835650,
+              "data": {
+                "name": "en_GB"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
