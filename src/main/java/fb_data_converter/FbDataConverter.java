@@ -29,7 +29,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 public class FbDataConverter {
 	public static void main(String[] args) throws IOException, ParseException {
-		String file = "/Users/prasanna/Downloads/facebook-100090052664579 (5).zip";
+		String file = "./sample/sample.zip";
 		UnZip unZip = new UnZip(file);
 		String dataFolder = unZip.fileToFolder();
 		File jsonFile = getJsonFile(dataFolder);
