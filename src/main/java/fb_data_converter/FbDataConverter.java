@@ -63,13 +63,10 @@ public class FbDataConverter {
 					}
 					document.newPage();
 				} catch (DocumentException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
@@ -113,24 +110,24 @@ public class FbDataConverter {
 			Object timestamp = posts.get("timestamp");
 			long number = Integer.parseInt(timestamp.toString());
 			Instant instant = Instant.ofEpochSecond(number);
-			mainValues.put("date", (String) LocalDate.ofInstant(instant, ZoneId.systemDefault()).toString());
-			mainValues.put("time", (String) LocalTime.ofInstant(instant, ZoneId.systemDefault()).toString());
-			mainValues.put("day",
-					(String) LocalDate.ofInstant(instant, ZoneId.systemDefault()).getDayOfWeek().toString());
+			mainValues.put("date", LocalDate.ofInstant(instant, ZoneId.systemDefault()).toString());
+			mainValues.put("time", LocalTime.ofInstant(instant, ZoneId.systemDefault()).toString());
+			mainValues.put("day", LocalDate.ofInstant(instant, ZoneId.systemDefault()).getDayOfWeek().toString());
 			((ArrayList) posts.get("data")).forEach(emp -> {
 				mediaObjects.add((HashMap) emp);
 			});
 
 			mediaObjects.forEach(post -> {
 				Object po = post.get("post") != null ? post.get("post") : "";
-				mainValues.put("post", (String) po.toString());
+				mainValues.put("post", po.toString());
 			});
 		}
 		if (posts.get("attachments") != null) {
 			att = attachmentsObject(posts.get("attachments"));
-			if (mainValues.get("post") != null && att.get("description") != null) {
-				if (mainValues.get("post").compareTo(att.get("description")) == 0) {
-					mainValues.put("uri", (String) att.get("uri").toString());
+			String desc = att.get("description");
+			if (mainValues.get("post") != null && desc != null) {
+				if (mainValues.get("post").compareTo(desc) == 0) {
+					mainValues.put("uri", att.get("uri").toString());
 				}
 			} else {
 				mainValues.put("uri", "");
@@ -165,8 +162,8 @@ public class FbDataConverter {
 
 		medisPostObjects.forEach(post -> {
 			if (post != null && post.get("description") != null) {
-				mainValues.put("description", (String) post.get("description").toString());
-				mainValues.put("uri", (String) post.get("uri").toString());
+				mainValues.put("description", post.get("description").toString());
+				mainValues.put("uri", post.get("uri").toString());
 			}
 		});
 

@@ -21,8 +21,8 @@ public class UnZip {
 		try {
             int BUFFER = 4096;
 			File file = new File(fileName);
-    		FileSeparator pdfFilePath = new FileSeparator(fileName, '/', '.');
-            extractFolder = pdfFilePath.path() + "/" + pdfFilePath.filename();
+    		FileSeparator FilePath = new FileSeparator(fileName, '/', '.');
+            extractFolder = FilePath.path() + "/" + FilePath.filename();
             try (ZipFile zip = new ZipFile(file)) {
 				String newPath = extractFolder;
 				new File(newPath).mkdir();
